@@ -41,7 +41,7 @@ export async function POST (request: NextRequest) {
       if (error instanceof Error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
-      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
+      return NextResponse.json({ error: 'Signup error occurred' }, { status: 500 });
 
     }
 }
