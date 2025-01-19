@@ -1,26 +1,53 @@
 "use client";
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function LoginPage() {
+   const router = useRouter();
    const [user, setUser] = useState({
       email: "",
       password: "",
    });
 
+   const [buttonDisabled, setButtonDisabled] = useState(true);
+   const [loading, setLoading] = useState(false);
+
+   useEffect(() => {
+      if(user.email.trim().length > 0 && user.password.trim().length > 0) {
+         setButtonDisabled(false);
+      }
+      else setButtonDisabled(true);
+   }, [user])
+
    const onLogin = async () => {
+      try {
+         setLoading(true);
+         const response = await axios.post("/api/users/login", user)
+         console.log("User logged in successfully", response.data);
+         toast.success("Login success");
+         router.push("/profile")
+         
+      } catch (error) {
+         if(error instanceof Error) return toast.error(error.message);
+         console.log("Login error occured", error);
+      } finally {
+         setLoading(false)
+      }
       
    };
 
 
    return (
       <div className="flex flex-col items-center justify-center py-2 min-h-screen gap-y-1">
-         <h1 className="text-3xl text-center">Login</h1>
+         <Toaster position="top-right" reverseOrder={false}/>
+         <h1 className="text-3xl text-center">{loading ? "Processing" : "Login page"}</h1>
          <label htmlFor="email">email</label>
          <hr className="h-2" />
          <input
-            className="p-1 rounded-lg"
+            className="p-1 rounded-lg text-black"
             type="text"
             id="email"
             value={user.email}
@@ -30,7 +57,7 @@ export default function LoginPage() {
          />
          <label htmlFor="password">password</label>
          <input
-            className="p-1 rounded-lg"
+            className="p-1 rounded-lg text-black"
             type="password"
             id="password"
             value={user.password}
@@ -42,14 +69,9 @@ export default function LoginPage() {
             className="border"
             onClick={onLogin}
 
-         >Login here
+         >{buttonDisabled ? "All field is required" : "Login"}
          </button>
          <Link href="/signup">Go to sign-up page</Link>
-
-
-
-
-
 
       </div>
    )
