@@ -71,6 +71,7 @@ export default function LoginPage() {
 
          >{buttonDisabled ? "All field is required" : "Login"}
          </button>
+         <Link href="/forgotpassword">forgot password?</Link>
          <Link href="/signup">Go to sign-up page</Link>
 
       </div>
