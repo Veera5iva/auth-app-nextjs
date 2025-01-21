@@ -2,6 +2,7 @@
 import User from "@/models/userModel";
 import { connect } from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
+import bcryptjs from "bcryptjs"
 
 connect();
 
@@ -10,13 +11,16 @@ export async function POST(request: NextRequest) {
       const reqBody = await request.json();
       console.log(reqBody);
       
-      const {token, newPassword} = reqBody;
+      const {token, password} = reqBody;
 
       const user = await User.findOne({forgotPasswordToken: token, forgotPasswordTokenExpiry: {$gt: Date.now()}})
 
       if(!user) return NextResponse.json({error: "User not found"}, {status: 400});
 
-      user.password = newPassword;
+      const salt = await bcryptjs.genSalt(10);
+      const hashedPassword = await bcryptjs.hash(password, salt)
+
+      user.password = hashedPassword;
       user.forgotPasswordToken = undefined;
       user.forgotPasswordTokenExpiry = undefined;
 
