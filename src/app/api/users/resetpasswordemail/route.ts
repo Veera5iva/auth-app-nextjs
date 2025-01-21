@@ -9,8 +9,7 @@ connect();
 export async function POST (request: NextRequest) {
    try {
       const reqBody = await request.json()
-      console.log("HEre also");
-      
+            
       const {email} = reqBody
       const user = await User.findOne({email})
       if(!user) return NextResponse.json({error: "User not found"}, {status: 400});
